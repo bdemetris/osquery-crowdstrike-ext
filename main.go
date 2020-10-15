@@ -3,21 +3,30 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"log"
+	"time"
 
 	"github.com/kolide/osquery-go"
 	"github.com/kolide/osquery-go/plugin/table"
 )
 
 func main() {
-	// socket := flag.String("socket", "", "Path to osquery socket file")
-	socket := "/Users/brettdemetris/.osquery/shell.em"
-	// flag.Parse()
-	// if *socket == "" {
-	// 	log.Fatalf(`Usage: %s --socket SOCKET_PATH`, os.Args[0])
-	// }
+	var (
+		flSocketPath = flag.String("socket", "", "")
+		flTimeout    = flag.Int("timeout", 0, "")
+		_            = flag.Int("interval", 0, "")
+		_            = flag.Bool("verbose", false, "")
+	)
+	flag.Parse()
 
-	server, err := osquery.NewExtensionManagerServer("crowdstrike_falcon", socket)
+	// allow for osqueryd to create the socket path otherwise it will error
+	time.Sleep(3 * time.Second)
+
+	server, err := osquery.NewExtensionManagerServer(
+		"crowdstrike_falcon",
+		*flSocketPath,
+		osquery.ServerTimeout(time.Duration(*flTimeout)*time.Second))
 	if err != nil {
 		log.Fatalf("Error creating extension: %s\n", err)
 	}
