@@ -14,4 +14,6 @@ clean:
 	rm -rf ${PKGDIR_TMP}_darwin
 
 build: .pre-build
-	GOOS=darwin go build -i -o build/${APP_NAME} -pkgdir ${PKGDIR_TMP}
+	GOOS=darwin GOARCH=amd64 go build -i -o build/${APP_NAME}-amd64 -pkgdir ${PKGDIR_TMP}
+	GOOS=darwin GOARCH=arm64 go build -i -o build/${APP_NAME}-arm64 -pkgdir ${PKGDIR_TMP}
+	lipo -create -output build/${APP_NAME} build/${APP_NAME}-amd64 build/${APP_NAME}-arm64
