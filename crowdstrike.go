@@ -36,32 +36,21 @@ func falconStats() (Stats, error) {
 	return stats, nil
 }
 
-func (s Stats) agentInfo() (agentInfo, error) {
-	// op, err := strconv.ParseBool(s.falconStats.Section("").Key("Sensor operational").String())
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	info := agentInfo{
+func (s Stats) agentInfo() agentInfo {
+	return agentInfo{
 		Version:           s.falconStats.Section("").Key("version").String(),
 		AgentID:           s.falconStats.Section("").Key("agentID").String(),
 		CustomerID:        s.falconStats.Section("").Key("customerID").String(),
 		SensorOperational: s.falconStats.Section("").Key("Sensor operational").String(),
 	}
-	return info, nil
 }
 
-func (s Stats) cloudInfo() (cloudInfo, error) {
-	// p, err := strconv.Atoi(s.falconStats.Section("").Key("Port").String())
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-	info := cloudInfo{
+func (s Stats) cloudInfo() cloudInfo {
+	return cloudInfo{
 		Host:  s.falconStats.Section("").Key("Host").String(),
 		Port:  s.falconStats.Section("").Key("Port").String(),
 		State: s.falconStats.Section("").Key("State").String(),
-	}
-
-	return info, nil
+	}, nil
 }
 
 type agentInfo struct {
