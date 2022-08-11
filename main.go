@@ -34,7 +34,7 @@ func main() {
 	// Create and register a new table plugin with the server.
 	// table.NewPlugin requires the table plugin name,
 	// a slice of Columns and a Generate function.
-	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", falconColums(), FalconGenerate))
+	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", FalconColums(), FalconGenerate))
 	if err := server.Run(); err != nil {
 		log.Fatalln(err)
 	}
@@ -73,7 +73,7 @@ func FalconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map
 	return values, nil
 }
 
-func falconColums() []table.ColumnDefinition {
+func FalconColums() []table.ColumnDefinition {
 	return []table.ColumnDefinition{
 		table.TextColumn("Version"),
 		table.TextColumn("AgentID"),
