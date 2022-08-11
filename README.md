@@ -7,3 +7,4 @@ Gathers basic data on sensor using `falconctl stats`. The rest of the data could
 clone this repo
 
 `make download && make build`
+
