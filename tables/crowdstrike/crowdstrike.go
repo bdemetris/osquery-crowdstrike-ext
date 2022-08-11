@@ -1,4 +1,4 @@
-package main
+package crowdstrike
 
 import (
 	"log"
@@ -14,7 +14,7 @@ type Stats struct {
 	falconStats *ini.File
 }
 
-func falconStats() (Stats, error) {
+func FalconStats() (Stats, error) {
 
 	out, err := exec.Command(falconPath, "stats").Output()
 	if err != nil {
@@ -36,7 +36,7 @@ func falconStats() (Stats, error) {
 	return stats, nil
 }
 
-func (s Stats) agentInfo() agentInfo {
+func (s Stats) AgentInfo() agentInfo {
 	return agentInfo{
 		Version:           s.falconStats.Section("").Key("version").String(),
 		AgentID:           s.falconStats.Section("").Key("agentID").String(),
@@ -45,7 +45,7 @@ func (s Stats) agentInfo() agentInfo {
 	}
 }
 
-func (s Stats) cloudInfo() cloudInfo {
+func (s Stats) CloudInfo() cloudInfo {
 	return cloudInfo{
 		Host:  s.falconStats.Section("").Key("Host").String(),
 		Port:  s.falconStats.Section("").Key("Port").String(),

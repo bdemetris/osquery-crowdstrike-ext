@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/bdemetris/osquery-crowdstrike-ext/tables/crowdstrike"
 	osquery "github.com/osquery/osquery-go"
 	"github.com/osquery/osquery-go/plugin/table"
 )
@@ -41,15 +42,15 @@ func main() {
 }
 
 func FalconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
-	stats, err := falconStats()
+	stats, err := crowdstrike.FalconStats()
 	if err != nil {
 		log.Println(err)
 	}
 
-	agent := stats.agentInfo()
-	cloud := stats.cloudInfo()
+	agent := stats.AgentInfo()
+	cloud := stats.CloudInfo()
 
-	ft := falconTable{
+	ft := FalconTable{
 		Version:           agent.Version,
 		AgentID:           agent.AgentID,
 		CustomerID:        agent.CustomerID,
@@ -85,7 +86,7 @@ func FalconColums() []table.ColumnDefinition {
 	}
 }
 
-type falconTable struct {
+type FalconTable struct {
 	Version           string
 	AgentID           string
 	CustomerID        string
