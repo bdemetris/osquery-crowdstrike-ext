@@ -1,9 +1,12 @@
 package crowdstrike
 
 import (
+	"context"
+	"encoding/json"
 	"log"
 	"os/exec"
 
+	"github.com/osquery/osquery-go/plugin/table"
 	"gopkg.in/ini.v1"
 )
 
@@ -53,6 +56,51 @@ func (s Stats) CloudInfo() cloudInfo {
 	}
 }
 
+func FalconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
+	stats, err := FalconStats()
+	if err != nil {
+		log.Println(err)
+	}
+
+	agent := stats.AgentInfo()
+	cloud := stats.CloudInfo()
+
+	ft := FalconTable{
+		Version:           agent.Version,
+		AgentID:           agent.AgentID,
+		CustomerID:        agent.CustomerID,
+		SensorOperational: agent.SensorOperational,
+		Host:              cloud.Host,
+		Port:              cloud.Port,
+		State:             cloud.State,
+	}
+
+	var values []map[string]string
+
+	j, _ := json.Marshal(ft)
+	m := make(map[string]string)
+	err = json.Unmarshal(j, &m)
+	if err != nil {
+		return nil, err
+	}
+
+	values = append(values, m)
+
+	return values, nil
+}
+
+func FalconColumns() []table.ColumnDefinition {
+	return []table.ColumnDefinition{
+		table.TextColumn("Version"),
+		table.TextColumn("AgentID"),
+		table.TextColumn("CustomerID"),
+		table.TextColumn("SensorOperational"),
+		table.TextColumn("Host"),
+		table.TextColumn("Port"),
+		table.TextColumn("State"),
+	}
+}
+
 type agentInfo struct {
 	Version           string
 	AgentID           string
@@ -64,4 +112,14 @@ type cloudInfo struct {
 	Host  string
 	Port  string
 	State string
+}
+
+type FalconTable struct {
+	Version           string
+	AgentID           string
+	CustomerID        string
+	SensorOperational string
+	Host              string
+	Port              string
+	State             string
 }

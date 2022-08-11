@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"flag"
 	"log"
 	"time"
@@ -35,63 +33,8 @@ func main() {
 	// Create and register a new table plugin with the server.
 	// table.NewPlugin requires the table plugin name,
 	// a slice of Columns and a Generate function.
-	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", FalconColums(), FalconGenerate))
+	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", crowdstrike.FalconColumns(), crowdstrike.FalconGenerate))
 	if err := server.Run(); err != nil {
 		log.Fatalln(err)
 	}
-}
-
-func FalconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
-	stats, err := crowdstrike.FalconStats()
-	if err != nil {
-		log.Println(err)
-	}
-
-	agent := stats.AgentInfo()
-	cloud := stats.CloudInfo()
-
-	ft := FalconTable{
-		Version:           agent.Version,
-		AgentID:           agent.AgentID,
-		CustomerID:        agent.CustomerID,
-		SensorOperational: agent.SensorOperational,
-		Host:              cloud.Host,
-		Port:              cloud.Port,
-		State:             cloud.State,
-	}
-
-	var values []map[string]string
-
-	j, _ := json.Marshal(ft)
-	m := make(map[string]string)
-	err = json.Unmarshal(j, &m)
-	if err != nil {
-		return nil, err
-	}
-
-	values = append(values, m)
-
-	return values, nil
-}
-
-func FalconColums() []table.ColumnDefinition {
-	return []table.ColumnDefinition{
-		table.TextColumn("Version"),
-		table.TextColumn("AgentID"),
-		table.TextColumn("CustomerID"),
-		table.TextColumn("SensorOperational"),
-		table.TextColumn("Host"),
-		table.TextColumn("Port"),
-		table.TextColumn("State"),
-	}
-}
-
-type FalconTable struct {
-	Version           string
-	AgentID           string
-	CustomerID        string
-	SensorOperational string
-	Host              string
-	Port              string
-	State             string
 }
