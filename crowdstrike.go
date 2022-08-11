@@ -50,7 +50,7 @@ func (s Stats) cloudInfo() cloudInfo {
 		Host:  s.falconStats.Section("").Key("Host").String(),
 		Port:  s.falconStats.Section("").Key("Port").String(),
 		State: s.falconStats.Section("").Key("State").String(),
-	}, nil
+	}
 }
 
 type agentInfo struct {
