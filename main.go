@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/kolide/osquery-go"
-	"github.com/kolide/osquery-go/plugin/table"
+	osquery "github.com/osquery/osquery-go"
+	"github.com/osquery/osquery-go/plugin/table"
 )
 
 func main() {
@@ -34,25 +34,20 @@ func main() {
 	// Create and register a new table plugin with the server.
 	// table.NewPlugin requires the table plugin name,
 	// a slice of Columns and a Generate function.
-	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", falconColums(), falconGenerate))
+	server.RegisterPlugin(table.NewPlugin("crowdstrike_falcon", falconColums(), FalconGenerate))
 	if err := server.Run(); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func falconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
+func FalconGenerate(ctx context.Context, queryContext table.QueryContext) ([]map[string]string, error) {
 	stats, err := falconStats()
 	if err != nil {
 		log.Println(err)
 	}
-	agent, err := Stats.agentInfo(stats)
-	if err != nil {
-		log.Println(err)
-	}
-	cloud, err := Stats.cloudInfo(stats)
-	if err != nil {
-		log.Println(err)
-	}
+
+	agent := stats.agentInfo()
+	cloud := stats.cloudInfo()
 
 	ft := falconTable{
 		Version:           agent.Version,
